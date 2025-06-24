@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'bitnami/kubectl:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
+            args '--entrypoint=""' // disables problematic default entrypoint
         }
     }
 
