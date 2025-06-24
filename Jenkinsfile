@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'bitnami/kubectl:latest'
-            args '--entrypoint=""' // disables problematic default entrypoint
-        }
-    }
+    agent any
 
     stages {
         stage('Clone Repository') {
@@ -15,13 +10,17 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    def dockerImage = docker.build("brightweb:latest")
-                }
+                sh 'docker build -t brightweb:latest .'
             }
         }
 
         stage('Apply Kubernetes Config') {
+            agent {
+                docker {
+                    image 'bitnami/kubectl:latest'
+                    args '--entrypoint=""'
+                }
+            }
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
             }
