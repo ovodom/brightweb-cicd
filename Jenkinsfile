@@ -16,12 +16,10 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Apply Kubernetes Config') {
             steps {
-                script {
-                    sh 'docker rm -f brightweb || true'
-                    sh 'docker run -d --name brightweb -p 80:80 brightweb:latest'
-                }
+                sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl apply -f k8s/service.yaml'
             }
         }
     }
