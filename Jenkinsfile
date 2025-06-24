@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'bitnami/kubectl:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     stages {
         stage('Clone Repository') {
@@ -11,7 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("brightweb:latest")
+                    def dockerImage = docker.build("brightweb:latest")
                 }
             }
         }
@@ -19,7 +24,6 @@ pipeline {
         stage('Apply Kubernetes Config') {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
             }
         }
     }
