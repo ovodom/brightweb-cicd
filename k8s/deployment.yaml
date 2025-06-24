@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brightweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brightweb
+  template:
+    metadata:
+      labels:
+        app: brightweb
+    spec:
+      containers:
+      - name: brightweb
+        image: brightweb:latest
+        ports:
+        - containerPort: 80
