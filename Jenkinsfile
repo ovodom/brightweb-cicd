@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        KUBECONFIG = "${env.WORKSPACE}/.kubeconfig"
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -10,19 +14,17 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t brightweb:latest .'
+                script {
+                    docker.build("brightweb:latest")
+                }
             }
         }
 
         stage('Apply Kubernetes Config') {
-            agent {
-                docker {
-                    image 'bitnami/kubectl:latest'
-                    args '--entrypoint=""'
-                }
-            }
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl apply -f k8s/deployment.yaml'
+                }
             }
         }
     }
